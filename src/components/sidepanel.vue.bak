@@ -1,0 +1,111 @@
+<script setup></script>
+
+<template>
+  <div class="background-component">
+    <div class="sidepanel-component">
+      <div class="logo-with-button-component">
+        <div class="sidepanel-logo" />
+        <div class="sidepanel-button"><a></a></div>
+      </div>
+      <ul>
+        <li>
+          <a class="sidepanel-logo" /> <a class="sidepanel-main">Dashboard</a>
+        </li>
+        <li>
+          <a class="sidepanel-logo" /> <a class="sidepanel-main">Data Guru</a>
+        </li>
+        <li>
+          <a class="sidepanel-logo" /> <a class="sidepanel-main">Penilaian</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="mainpanel-component">
+      <div class="search-component">
+        <img src="../assets/search.png" alt="" />
+        <p>Search Bar</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.mainpanel-component {
+  border: 1px solid skyblue;
+  width: 95%;
+  flex-direction: row;
+}
+
+.search-component img {
+  border: 1px solid wheat;
+  width: calc(100% - 400px);
+}
+
+.background-component {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  order: 1;
+
+  border: 1px solid wheat;
+  border-radius: 10px;
+  gap: 10px;
+}
+
+.sidepanel-component {
+  border-right: 1px solid black;
+  transition: width 1s ease;
+  width: 5vw;
+  overflow: hidden;
+}
+
+.sidepanel-component:hover {
+  width: 10vw;
+}
+
+.sidepanel-component ul {
+  padding: 1rem;
+}
+
+.sidepanel-component li {
+  border-radius: 0px 10px 10px 0px;
+  color: black;
+  list-style: none;
+  margin: 1rem 0px;
+}
+
+.sidepanel-component .sidepanel-main {
+  display: none;
+}
+
+.logo-with-button-component {
+  display: flex;
+  margin: 1rem 1rem 0rem 1rem;
+}
+
+.logo-with-button-component a {
+  padding: 5px;
+}
+
+.sidepanel-logo {
+  color: black;
+  border: 1px solid wheat;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 10px;
+}
+
+.sidepanel-main:hover {
+  background-color: #000fff;
+  border-radius: 0px 10px 10px 0px;
+  margin: 0px;
+  padding-right: 10px;
+}
+
+.search {
+  border: 1px solid black;
+  border-radius: 100px;
+  margin: 10px;
+  padding: 20px;
+}
+</style>
