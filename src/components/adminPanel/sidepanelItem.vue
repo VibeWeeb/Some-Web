@@ -34,12 +34,10 @@ function page(name) {
           <a class="menu" :class="{ show: status }" @click="page('penilaian')"> Penilaian</a>
         </div>
       </div>
-      <div class="main-container">
+      <div class="main-container" :class="{ expanded: status }">
         <div class="main-header">
           <div class="main-header-1">
             <img class="search-logo" src="../../assets/search.png" alt="" />
-          </div>
-          <div class="main-header-2">
             <input class="input" type="text" placeholder="Searching Bar" />
           </div>
           <div class="main-header-3">
@@ -78,21 +76,21 @@ function page(name) {
   border-left: 1px solid #00000066;
   border-radius: 0px 20px 20px 0px;
   padding: 30px 0px 0px 25px;
-  flex-grow: 1;
+  width: 95%;
+}
+
+.main-container.expanded {
+  width: 87%;
 }
 
 /*main header css */
 .main-header {
   display: flex;
+  justify-content: space-between;
 }
 
-.main-header-1,
-.main-header-3 {
-  width: 5%;
-}
-
-.main-header-2 {
-  width: 90%;
+.main-header-1 {
+  display: flex;
 }
 
 .main-header .input {
@@ -111,7 +109,7 @@ function page(name) {
 }
 
 .main-header-3 .exit-button {
-  padding-top: 10px;
+  margin: 0px 20px 0px 0px;
   width: 20px;
 }
 
@@ -143,7 +141,7 @@ function page(name) {
   border: 1px solid black;
   border-radius: 20px 0px 0px 20px;
   padding: 15px 20px;
-  width: 8vh;
+  width: 5%;
 
   transition: width 0.5s ease-in-out;
   overflow: hidden;
@@ -152,7 +150,7 @@ function page(name) {
 }
 
 .container-sidepanel.expanded {
-  width: 20vh;
+  width: 13%;
 }
 
 /*dashboard logo customization */
@@ -222,7 +220,6 @@ function page(name) {
   }
 
   .main-container {
-    border-left: 1px solid #00000066;
     border-radius: 0px 20px 20px 0px;
     padding: 30px 0px 0px 10px;
     flex-grow: 1;
@@ -230,7 +227,7 @@ function page(name) {
 
   .main-header {
     display: flex;
-    width: 50%;
+    width: 90%;
     height: 0%;
     align-items: center;
   }
@@ -286,23 +283,19 @@ function page(name) {
     justify-content: flex-start;
     align-items: flex-start;
     flex-grow: 1;
+    margin-top: 10px;
   }
 
   /* sidepanel css */
   .container-sidepanel {
     border: 1px solid black;
     border-radius: 20px 0px 0px 20px;
-    padding: 15px 20px;
-    width: 8vh;
-
-    transition: width 0.5s ease-in-out;
-    overflow: hidden;
-    white-space: nowrap;
-    background-color: #00000066;
+    padding: 15px 30px 0px 10px;
+    width: 50px;
   }
 
   .container-sidepanel.expanded {
-    width: 20vh;
+    width: 50px;
   }
 
   /*dashboard logo customization */
@@ -310,7 +303,7 @@ function page(name) {
     left: 60px;
     top: 460px;
     height: 30px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   }
 
   .container-sidepanel-menu {
@@ -334,8 +327,8 @@ function page(name) {
   .container-sidepanel .logo {
     position: relative;
     height: 30px;
-    margin-top: 10px;
-    margin-bottom: 30px;
+    margin-top: 0px;
+    margin-bottom: 10px;
     margin-right: 10px;
   }
 
@@ -346,13 +339,10 @@ function page(name) {
   }
 
   .menu.show {
-    visibility: visible;
-    opacity: 1;
-    margin-bottom: 15px;
+    visibility: hidden;
+    opacity: 0;
+    margin-bottom: 0px;
     padding: 0px;
-    transition:
-      visibility 0s 0s,
-      opacity 0.4s linear;
   }
 }
 </style>

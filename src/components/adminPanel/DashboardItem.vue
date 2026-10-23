@@ -49,4 +49,38 @@ const userName = readonly(name)
   height: 130px;
   border-radius: 20px;
 }
+
+@media(max-width:  360px){
+  h1{
+    font-size: 30px;
+    padding-bottom: 40px;
+  }
+
+.main-container {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.header {
+  border-bottom: 1px solid black;
+}
+
+.body {
+  margin-top: 30px;
+}
+
+.total-guru,
+.total-perhitungan,
+.rata-rata {
+  border: 1px solid black;
+  width: 130px;
+  height: 100px;
+  border-radius: 20px;
+  margin-left: 55px;
+}
+}
 </style>
