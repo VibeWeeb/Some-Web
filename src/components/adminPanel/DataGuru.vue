@@ -24,8 +24,13 @@
             <td>01</td>
             <td>example name</td>
             <td>example name</td>
-            <th>fiqih</th>
-            <th></th>
+            <td>fiqih</td>
+            <td>
+              <div class="action">
+                <a href=""><img src="@/assets/delete(1).png" /></a>
+                <a href=""><img src="@/assets/edit.png" /></a>
+              </div>
+            </td>
           </tr>
         </table>
       </div>
@@ -71,7 +76,23 @@
   border-bottom: 1px solid #00000066;
 }
 
-.table-yea tr:hover {
+.tab .table-yea tr:hover {
   background-color: #0000001a;
+}
+
+.action {
+  display: flex;
+  gap: 0px;
+  width: 10%;
+  justify-content: end;
+}
+
+.action a {
+  border: 1px solid wheat;
+  margin: 0px;
+}
+
+.action img {
+  width: 50%;
 }
 </style>
