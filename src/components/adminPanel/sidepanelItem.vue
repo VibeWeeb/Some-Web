@@ -7,7 +7,7 @@ import { ref } from 'vue'
 import dashboard from './DashboardItem.vue'
 import dataGuru from './DataGuru.vue'
 import PenilaianKinerja from './PenilaianKinerja.vue'
-import { loginCheck } from '@/data/loginCheck'
+import { loginCheck, pagecheck } from '@/data/loginCheck'
 const pageCode = ref('dashboard')
 const status = ref(false)
 
@@ -26,8 +26,9 @@ function page(name) {
           <a class="menu" :class="{ show: status }" @click="page('dashboard')">Dashboard</a>
         </div>
         <div class="container-sidepanel-menu" :class="{ hover: status }">
-          <img class="logo" src="../../assets/edit.png" @click="page('guru')" />
-          <a class="menu" :class="{ show: status }" @click="page('guru')"> Data Guru</a>
+          <img class="logo" src="../../assets/edit.png" @click="((pagecheck = false), page('guru'))" />
+          <a class="menu" :class="{ show: status }" @click="((pagecheck = false), page('guru'))">
+            Data Guru</a>
         </div>
         <div class="container-sidepanel-menu" :class="{ hover: status }">
           <img class="logo" src="../../assets/edit.png" @click="page('penilaian')" />
@@ -41,7 +42,7 @@ function page(name) {
             <input class="input" type="text" placeholder="Searching Bar" />
           </div>
           <div class="main-header-3">
-            <a @click="loginCheck = !loginCheck"><img class="exit-button" style="" src="@/assets/logout.png" />
+            <a @click="loginCheck = 'sign out'"><img class="exit-button" style="" src="@/assets/logout.png" />
             </a>
           </div>
         </div>
@@ -91,14 +92,15 @@ function page(name) {
 
 .main-header-1 {
   display: flex;
+  width: 80%;
 }
 
 .main-header .input {
   background-color: transparent;
   padding: 10px;
   margin: 5px;
-  flex-grow: 1;
   font-size: 1.05rem;
+  flex-grow: 1;
   outline: none;
   border: none;
   width: 100%;

@@ -5,8 +5,8 @@ import { loginCheck } from '@/data/loginCheck'
 </script>
 
 <template>
-  <loginPages v-if="loginCheck == true" />
-  <dashboard v-if="loginCheck == false" />
+  <loginPages v-if="loginCheck == 'sign out'" />
+  <dashboard v-if="loginCheck == 'sign in'" />
 </template>
 
 <style>

@@ -6,7 +6,7 @@ const password = ref(null)
 
 function loginHandler() {
   if (username.value === 'admin' && password.value === 'admin') {
-    loginCheck.value = !loginCheck
+    loginCheck.value = 'sign in'
   } else {
     alert('worng username or password')
   }
