@@ -30,8 +30,8 @@ import { pagecheck } from '@/data/loginCheck'
             <td>example name</td>
             <td>fiqih</td>
             <td class="action">
-              <a @click="pagecheck = !pagecheck"> <img src="@/assets/edit.png" /></a><a> <img
-                  src="@/assets/delete(1).png" /></a>
+              <img src="@/assets/delete(1).png" />
+              <img @click="pagecheck = !pagecheck" src="@/assets/eye.png" />
             </td>
           </tr>
           <tr>
@@ -40,8 +40,8 @@ import { pagecheck } from '@/data/loginCheck'
             <td>example name</td>
             <td>fiqih</td>
             <td class="action">
-              <a @click="pagecheck = !pagecheck"> <img src="@/assets/edit.png" /></a><a> <img
-                  src="@/assets/delete(1).png" /></a>
+              <img src="@/assets/delete(1).png" />
+              <img @click="pagecheck = !pagecheck" src="@/assets/eye.png" />
             </td>
           </tr>
         </tbody>
@@ -106,12 +106,23 @@ import { pagecheck } from '@/data/loginCheck'
   right: 50px;
 }
 
-.action a:hover {
-  border: 1px solid white;
+.action a {
+  height: 20px;
+  width: 20px;
+}
+
+.action img:active {
+  border: 1px solid black;
   border-radius: 30px;
+  filter: brightness(0);
 }
 
 .action img {
-  width: 17%;
+  width: 15%;
+  border: 1px solid white;
+  border-radius: 30px;
+  margin-right: 10px;
+  margin-top: 10px;
+  padding: 5px;
 }
 </style>

@@ -11,8 +11,8 @@ import { loginCheck } from '@/data/loginCheck'
 
 <style>
 * {
-  color: wheat;
   box-sizing: border-box;
+  color: wheat;
   margin: 0;
   padding: 0;
 }
