@@ -9,7 +9,7 @@ const props = defineProps({
   initialData: {
     type: Object,
     default: () => ({
-      nip: null,
+      nip: '',
       name: '',
       email: '',
       phonenumber: '',
@@ -34,7 +34,7 @@ const submitHandler = () => {
   const nipLength = String(dataGuru.value.nip).trim().length
   const phoneLength = String(dataGuru.value.phonenumber).trim().length
 
-  if (nipLength !== 12) {
+  if (nipLength >= 13) {
     err.nip = 'NIP harus berjumlah tepat 12 digit!'
   }
 
@@ -78,12 +78,12 @@ const submitHandler = () => {
     <form class="profile-page" @submit.prevent="submitHandler">
       <div class="profile-image">
         <img src="@/assets/people.png" alt="" />
-        <label for="file">Ganti Profile</label>
         <input id="file" type="file" />
+        <label for="file">Ganti Profile</label>
       </div>
       <div class="profile-list">
         <label>NIP :</label>
-        <input id="nip" type="number" v-model="dataGuru.nip" />
+        <input id="nip" type="number" v-model="dataGuru.nip" :disabled="isEdit" />
         <label>NAMA :</label>
         <input id="name" type="text" v-model="dataGuru.name" />
         <label>EMAIL :</label>
@@ -214,8 +214,17 @@ ul {
   width: 250px;
 }
 
+.profile-list input:focus {
+  border-color: #00000066;
+}
+
 .profile-list input[type='number'] {
   appearance: textfield;
+}
+
+.profile-list input[type='number']:disabled {
+  background: #0000001a;
+  color: #ffffff1a;
 }
 
 .profile-list #address {

@@ -5,12 +5,16 @@ const val = ref([])
 const page = ref(1)
 const max = ref(7)
 
-const emit = defineEmits(['addButton', 'editButton'])
+const emit = defineEmits(['addButton', 'editButton', 'deleteButton'])
 const add = () => {
   emit('addButton')
 }
 const edit = (guruObj, page) => {
   emit('editButton', guruObj, page)
+}
+
+const deletes = (guruObj) => {
+  emit('deleteButton', guruObj)
 }
 
 const data = async () => {
@@ -80,7 +84,7 @@ onMounted(async () => {
             <td class="some-nameing">{{ item.name }}</td>
             <td class="some-study">{{ item.email }}</td>
             <td class="action">
-              <img src="@/assets/delete(1).png" />
+              <img @click="deletes(item)" src="@/assets/delete(1).png" />
               <img @click="edit(item, 'see')" src="@/assets/eye.png" />
             </td>
           </tr>
@@ -88,7 +92,7 @@ onMounted(async () => {
       </table>
     </div>
     <div class="footer">
-      <p>Halaman : {{ val.length }}</p>
+      <p>Halaman : {{ page }}</p>
       <img class="footer-1" :class="{ disable: page === 1 }" src="@/assets/change-left.png" @click="before" />
       <img class="footer-2" :class="{ disable: val.length < max }" src="@/assets/change-right.png" @click="after" />
     </div>
