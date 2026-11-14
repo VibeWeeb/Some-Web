@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getData } from '@/data/loginCheck'
+import { get1, getData } from '@/data/loginCheck'
 const value = ref([])
 
 onMounted(async () => {
   try {
-    const data = await getData('guru')
+    const data = await getData(get1.value)
     value.value = data
   } catch (error) {
-    console.error("error Doesn't read tablle : ", error)
+    console.error("error Doesn't read table : ", error)
   }
 })
 </script>

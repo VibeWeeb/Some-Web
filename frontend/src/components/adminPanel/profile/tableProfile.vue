@@ -1,9 +1,11 @@
 <script setup>
-import { getLimit } from '@/data/loginCheck'
+import { get1, getLimit, serchData } from '@/data/loginCheck'
 import { ref, onMounted, watch } from 'vue'
 const val = ref([])
 const page = ref(1)
 const max = ref(7)
+const sh = ref('')
+const totalPages = ref(1)
 
 const emit = defineEmits(['addButton', 'editButton', 'deleteButton'])
 const add = () => {
@@ -19,10 +21,25 @@ const deletes = (guruObj) => {
 
 const data = async () => {
   try {
-    const data = await getLimit('guru', page.value)
-    val.value = data
+    const data = await getLimit(get1.value, page.value, max.value)
+    val.value = data.result
+    totalPages.value = data.totalPages
   } catch (error) {
     console.error("error Doesn't read tablle : ", error)
+  }
+}
+
+const search = async () => {
+  if (!sh.value.trim()) {
+    page.value = 1
+    return data()
+  }
+  try {
+    const data = await serchData(get1.value, sh.value, page.value, max.value)
+    val.value = data.result
+    totalPages.value = data.totalPages
+  } catch (err) {
+    console.error(err)
   }
 }
 
@@ -33,13 +50,13 @@ const before = () => {
 }
 
 const after = () => {
-  if (val.value.length === max.value) {
+  if (page.value < totalPages.value) {
     page.value++
   }
 }
 
 const numbering = (idObj) => {
-  const number = (page.value - 1) * 7 + (idObj + 1)
+  const number = (page.value - 1) * max.value + (idObj + 1)
   if (number < 10) {
     return '0' + number
   } else {
@@ -48,7 +65,11 @@ const numbering = (idObj) => {
 }
 
 watch(page, () => {
-  data()
+  if (!sh.value.trim()) {
+    data()
+  } else {
+    search()
+  }
 })
 
 onMounted(async () => {
@@ -60,7 +81,9 @@ onMounted(async () => {
   <div class="table-base">
     <div class="main-header">
       <div class="left">
-        <p>test</p>
+        <img src="@/assets/search.png" alt="" />
+        <input class="input" type="text" @keyup.enter="search" v-model="sh" placeholder="Searching Bar" />
+        <p>{{ val.value }}</p>
       </div>
       <div class="right">
         <a @click="add">NEW</a>
@@ -78,15 +101,21 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in val" :key="item.id">
-            <td class="some-numbering">{{ numbering(index) }}</td>
-            <td class="some-nip">{{ item.nip }}</td>
-            <td class="some-nameing">{{ item.name }}</td>
-            <td class="some-study">{{ item.email }}</td>
-            <td class="action">
-              <img @click="deletes(item)" src="@/assets/delete(1).png" />
-              <img @click="edit(item, 'see')" src="@/assets/eye.png" />
-            </td>
+          <template v-if="val.length > 0">
+            <tr v-for="(item, index) in val" :key="item.id">
+              <td v-if="item === null">test</td>
+              <td class="some-numbering">{{ numbering(index) }}</td>
+              <td class="some-nip">{{ item.nip }}</td>
+              <td class="some-nameing">{{ item.name }}</td>
+              <td class="some-study">{{ item.email }}</td>
+              <td class="action">
+                <img @click="deletes(item)" src="@/assets/delete(1).png" />
+                <img @click="edit(item, 'see')" src="@/assets/eye.png" />
+              </td>
+            </tr>
+          </template>
+          <tr v-else class="empty">
+            <td colspan="5">No Data Found</td>
           </tr>
         </tbody>
       </table>
@@ -110,6 +139,29 @@ onMounted(async () => {
 
 .table-base.hide {
   visibility: hidden;
+}
+
+.left {
+  display: flex;
+}
+
+.left img {
+  width: 20px;
+  height: 20px;
+  border: 1px solid white;
+  border-radius: 50%;
+  margin: 10px;
+  padding: 1px;
+}
+
+.left input {
+  background-color: transparent;
+  padding: 10px;
+  font-size: 1.05rem;
+  flex-grow: 1;
+  outline: none;
+  border: none;
+  width: 100%;
 }
 
 .right a {
@@ -141,26 +193,47 @@ onMounted(async () => {
   width: 100%;
   border-collapse: collapse;
   font-size: 20px;
+  table-layout: fixed;
+}
+
+.table-component thead {
+  border-bottom: 1px solid #00000066;
+  max-height: 10%;
+}
+
+.table-component td {
+  overflow-wrap: break-word;
+  text-align: left;
+  max-height: 10%;
 }
 
 .table-component th {
-  border-bottom: 1px solid #00000066;
-  height: 10%;
+  text-align: left;
+}
+
+.table-component .empty td {
+  height: 90%;
+  text-align: center;
 }
 
 .table-component tr:hover {
   background-color: #0000001a;
 }
 
-.table-component .some-numbering {
-  width: 5%;
+.some-numbering {
+  width: 10%;
 }
 
-.table-component .some-nip,
-.some-nameing,
+.some-nip {
+  width: 20%;
+}
+
+.some-nameing {
+  width: 30%;
+}
+
 .some-study {
-  width: 10%;
-  text-align: left;
+  width: 30%;
 }
 
 .action {
@@ -182,7 +255,7 @@ onMounted(async () => {
 }
 
 .action img {
-  width: 12%;
+  width: 30%;
   border: 1px solid white;
   border-radius: 30px;
   margin-right: 10px;

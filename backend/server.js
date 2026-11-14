@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { json } from 'express'
 import mysql from 'mysql2'
 import cors from 'cors'
 
@@ -13,110 +13,243 @@ const db = mysql.createConnection({
   database: 'kinerjaguru',
   port: 3307,
 })
+// GET
+// get single guru
+app.get('/api/guru/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+
+  if (!id || isNaN(id)) {
+    return res.status(400).json({ message: 'Bad Request : id not valid' })
+  }
+
+  const querySql = 'SELECT 1 FROM dataguru WHERE id = ? LIMIT 1'
+  db.query(querySql, [id], (err, result) => {
+    if (err) {
+      console.log(err)
+      return res.status(500).json({ message: 'Internal Server Error' })
+    }
+    const isExists = result.length > 0
+    res.json({ message: 'data ditemukan ', exists: isExists })
+  })
+})
+
+// get single nilai
+app.get('/api/nilai/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  if (!id || isNaN(id)) {
+    return res.status(400).json({ message: 'Bad Request : id not valid' })
+  }
+
+  const querySql = `SELECT p.id,
+    p.id_guru,
+    g.nip,
+    g.name,
+    p.pedagogik,
+    p.profesional,
+    p.sosial,
+    p.kepribadian
+    FROM penilaian p
+    INNER JOIN dataguru g ON p.nip_guru = g.nip
+    WHERE p.id = ?`
+
+  db.query(querySql, [id], (err, result) => {
+    if (err) {
+      console.log(err)
+      return res.status(500).json({ message: 'Internal Server Error' })
+    }
+    const isExists = result.length > 0
+    res.json({ message: 'data ditemukan ', exists: isExists })
+  })
+})
+
+// get all penilaian data
+app.get('/api/nilai', (req, res) => {
+  const { search, page, limit } = req.query
+
+  let queryParams = []
+  let whereSql = ''
+
+  if (search) {
+    whereSql = ' WHERE g.name LIKE ? or g.nip LIKE ?'
+    queryParams.push(`%${search}%`, `%${search}%`)
+  }
+  const countSql = `SELECT COUNT (*) AS total FROM dataguru ${whereSql}`
+  db.query(countSql, queryParams, (err, resCount) => {
+    if (err) {
+      console.log(err)
+      return res.status(500).json({ message: 'Internal Server Error' })
+    }
+    const totalData = resCount[0].total
+    const pages = parseInt(page) || 1
+    const maxLimit = parseInt(limit)
+    const offset = (pages - 1) * maxLimit
+    const totalPages = Math.ceil(totalData / maxLimit)
+
+    let querySql = `SELECT p.id,
+    p.id_guru,
+    g.nip,
+    g.name,
+    p.pedagogik,
+    p.profesional,
+    p.sosial,
+    p.kepribadian
+    FROM penilaian p
+    INNER JOIN dataguru g ON p.nip_guru = g.nip
+    ${whereSql}`
+
+    if (page) {
+      querySql += `LIMIT ? OFFSET ?`
+      queryParams.push(maxLimit, offset)
+    }
+
+    db.query(querySql, queryParams, (err, result) => {
+      if (err) {
+        console.log(err)
+        return res.status(500).json({ message: 'Internal Server Error' })
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Not Found' })
+      }
+      res.json({
+        message: 'Data Get',
+        result: result,
+        totalPages: totalPages,
+        totalData: totalData,
+      })
+    })
+  })
+})
 
 // get all guru data
-app.get('/api/guru/get', (_req, res) => {
-  db.query('SELECT * FROM dataguru', (err, result) => {
-    if (err) return res.status(500).json(err)
-    res.json(result)
+app.get('/api/guru', (req, res) => {
+  const { search, page, limit } = req.query
+
+  let queryParams = []
+  let whereSql = ''
+
+  if (search) {
+    whereSql = 'WHERE name LIKE ? or nip LIKE ?'
+    queryParams.push(`%${search}%`, `%${search}%`)
+  }
+  const countSql = `SELECT COUNT (*) AS total FROM dataguru ${whereSql}`
+  db.query(countSql, queryParams, (err, resCount) => {
+    if (err) {
+      console.log(err)
+      return res.status(500).json({ message: 'Internal Server Error' })
+    }
+    const totalData = resCount[0].total
+    const pages = parseInt(page) || 1
+    const maxLimit = parseInt(limit)
+    const offset = (pages - 1) * maxLimit
+    const totalPages = Math.ceil(totalData / maxLimit)
+
+    let querySql = `SELECT * FROM dataguru ${whereSql}`
+
+    if (page) {
+      querySql += `LIMIT ? OFFSET ?`
+      queryParams.push(maxLimit, offset)
+    }
+
+    db.query(querySql, queryParams, (err, result) => {
+      if (err) {
+        console.log(err)
+        return res.status(500).json({ message: 'Internal Server Error' })
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Not Found' })
+      }
+      res.json({
+        message: 'Data Get',
+        result: result,
+        totalPages: totalPages,
+        totalData: totalData,
+      })
+    })
   })
 })
 
-// get single data for checking
-app.get('/api/guru/check/', (req, res) => {
-  const nip = req.query.nip
-  const email = req.query.email
-  const phonenumber = req.query.phonenumber
-
-  const querySql = 'SELECT 1 FROM dataguru WHERE nip= ? OR email= ? OR phonenumber = ? LIMIT 1'
-  db.query(querySql, [nip, email, phonenumber], (err, result) => {
-    if (err) return res.status(500).json(err)
-    const isExists = result.length > 0
-    res.json({ exists: isExists })
-  })
-})
-
-// get 5 data in a row for checking page purpose
-app.get('/api/guru/get/page', (req, res) => {
-  const page = parseInt(req.query.page) || 1
-  const limit = 7
-
-  const offset = (page - 1) * limit
-
-  const querySql = 'SELECT * FROM dataguru LIMIT ? OFFSET ?'
-
-  db.query(querySql, [Number(limit), Number(offset)], (err, result) => {
-    if (err) return res.status(500).json(err)
-    res.json(result)
-  })
-})
-
+// POST (INSERT)
 // insert new data to table
-app.post('/api/guru/post', (req, res) => {
+app.post('/api/guru', (req, res) => {
   db.query(
     `INSERT INTO dataguru (name, nip, email, phonenumber,address) VALUES (?,?,?,?,?)`,
     [req.body.name, req.body.nip, req.body.email, req.body.phonenumber, req.body.address],
     (err, result) => {
-      if (err) return res.status(500).json(err)
-      res.json(result)
+      if (err) {
+        if (err.code === 'ER_BAD_NULL_ERROR') {
+          return res.status(400).json({ message: 'All data Must be filled' })
+        }
+
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(409).json({ message: 'Input data must be new' })
+        }
+
+        console.log(err)
+        return res.status(500).json({ message: 'Internal Server Error' })
+      }
+      res.status(201).json({
+        message: 'Data saved successfully',
+        id: result.insertId,
+      })
     },
   )
 })
 
-// delete exists data
-app.delete('/api/delete', (req, res) => {
-  const table = req.query.table
-  const id = parseInt(req.query.id)
-
-  const allowed = ['dataguru']
-
-  if (!table || !allowed.includes(table)) {
-    return res.status(400).json({ message: 'table name not allowed ' })
-  }
-
+// DELETE
+//
+// delete exists data guru
+app.delete('/api/guru/:id', (req, res) => {
+  const id = parseInt(req.params.id)
   if (!id || isNaN(id)) {
-    return res.status(400).json({ message: 'id not valid' })
+    return res.status(400).json({ message: 'Bad Request : id not valid' })
   }
 
-  const querySql = `DELETE FROM \`${table}\` WHERE id = ?`
+  const querySql = 'DELETE FROM dataguru WHERE id = ?'
   db.query(querySql, [id], (err, result) => {
-    if (err) return res.status(500).json(err)
-    res.json(result)
+    if (err) {
+      console.error(err)
+      return res.status(500).json({ message: 'Internal Server Error' })
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Not Found' })
+    }
+    res.json({ message: `Data Deleted`, id: id })
   })
 })
 
-app.put('/api/put', (req, res) => {
-  const table = req.query.table
-  const id = parseInt(req.query.id)
-
-  let SET = ''
-  let VALUES = ''
-  let WHERE = ''
+// PUT (UPDATE)
+// PUT guru
+app.put('/api/guru/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  const { nip, name, email, phonenumber, address } = req.body
 
   if (!id || isNaN(id)) {
-    return res.status(400).json({ message: 'Id not valid' })
+    return res.status(400).json({ message: 'Bad Request : id not valid' })
   }
 
-  if (table === 'dataguru') {
-    const { nip, name, email, phonenumber, address } = req.body
-    SET = 'nip = ?, name = ?, email = ?, phonenumber = ?, address =?  '
-    VALUES = [nip, name, email, phonenumber, address, id]
-    WHERE = 'id = ?'
-  } else {
-    return res.status(400).json({ message: `Table not Found ${id}, ${table}` })
-  }
+  const set = 'nip = ?, name = ?, email = ?, phonenumber = ?, address =?  '
+  const value = [nip, name, email, phonenumber, address, id]
+  const querySql = `UPDATE dataguru SET ${set} WHERE id = ?`
 
-  const querySql = `UPDATE \`${table}\` SET ${SET} WHERE ${WHERE}`
-  db.query(querySql, VALUES, (err, result) => {
-    if (err) return res.status(500).json(err)
-    res.json(result)
-  })
-})
+  db.query(querySql, value, (err, result) => {
+    if (err) {
+      if (err.code === 'ER_BAD_NULL_ERROR') {
+        return res.status(400).json({ message: 'All data Must be filled' })
+      }
 
-app.get('/api/user/get', (_req, res) => {
-  db.query('SELECT * FROM user', (err, result) => {
-    if (err) return res.status(500).json(err)
-    res.json({ message: 'data deleted', affectedRows: result.affectedRows })
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(409).json({ message: 'Input data must be new' })
+      }
+      console.log(err)
+      return res.status(500).json({ message: 'Internal Server Error' })
+    }
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ message: 'Bad Request : data doesnt changed' })
+    }
+    if (result.changedRows === 0) {
+      return res.json({ message: 'Tidak ada perubahan data', id: id })
+    }
+    res.status(201).json({ message: `Data Updated`, id: id })
   })
 })
 

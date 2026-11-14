@@ -7,55 +7,78 @@ export const pagecheck = reactive({
   main: '',
 })
 
-export const obj = ref('dataguru')
+export const obj = ref('guru')
+export const get1 = ref('guru')
 
 export const ids = ref(0)
 
 export const getData = async (table) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/${table}/get`)
-    return response.data
-  } catch (error) {
-    console.error('error in :', error)
+    const response = await axios.get(`http://localhost:3000/api/${table}`)
+    return response.data.result
+  } catch (err) {
+    console.error("Error can't get some data:", err.response?.data?.message || err.message)
+    throw err
   } finally {
     console.log(`Get data from ${table} completed!`)
   }
 }
 
-export const getSingleData = async (a, b, c) => {
+export const getSingleData = async (table, id) => {
   try {
-    const response = await axios.get('http://localhost:3000/api/guru/check', {
-      params: {
-        nip: a,
-        email: b,
-        phonenumber: c,
-      },
-    })
+    const response = await axios.get(`http://localhost:3000/api/${table}/${id}`)
     return response.data.exists
   } catch (err) {
-    console.error('Error in : ', err)
+    console.error("Error can't be deleted:", err.response?.data?.message || err.message)
+    throw err
   } finally {
     console.log(`Get data completed!`)
   }
 }
 
-export const getLimit = async (table, page) => {
+export const getLimit = async (table, page, max) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/${table}/get/page?page=${page}`)
+    const response = await axios.get(`http://localhost:3000/api/${table}`, {
+      params: {
+        page: page,
+        limit: max,
+      },
+    })
     return response.data
-  } catch (error) {
-    console.error('error in :', error)
+  } catch (err) {
+    console.error("Error can't be deleted:", err.response?.data?.message || err.message)
+    throw err
   } finally {
     console.log(`Get data from ${table} completed!`)
   }
 }
 
+export const serchData = async (table, searchObj, page, max) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/${table}`, {
+      params: {
+        search: searchObj,
+        page: page,
+        limit: max,
+      },
+    })
+
+    return response.data
+  } catch (err) {
+    console.error("Error can't be deleted:", err.response?.data?.message || err.message)
+    throw err
+  } finally {
+    console.log(`completed!`)
+  }
+}
+
 export const postData = async (table, data) => {
   try {
-    const response = await axios.post(`http://localhost:3000/api/${table}/post`, data)
+    const response = await axios.post(`http://localhost:3000/api/${table}`, data)
     console.log(response.data)
   } catch (err) {
-    console.error('Error in :', err)
+    console.error("Error can't be deleted:", err.response?.data?.message || err.message)
+    throw err
   } finally {
     console.log(`Post data for ${table} completed!`)
   }
@@ -63,29 +86,20 @@ export const postData = async (table, data) => {
 
 export const deleteData = async (table, id) => {
   try {
-    const response = await axios.delete(`http://localhost:3000/api/delete`, {
-      params: {
-        table: table,
-        id: id,
-      },
-    })
-    return response.data
+    const response = await axios.delete(`http://localhost:3000/api/${table}/${id}`)
+    return response.data.id
   } catch (err) {
     console.error("Erorr can't be deleted :", err.response?.data?.message || err.message)
     throw err
   }
 }
 
-export const putData = async (a, b, c) => {
+export const putData = async (table, id, data) => {
   try {
-    const response = await axios.put(`http://localhost:3000/api/put`, c, {
-      params: {
-        table: a,
-        id: b,
-      },
-    })
-    return response.data
+    const response = await axios.put(`http://localhost:3000/api/${table}/${id}`, data)
+    return response.data.result
   } catch (err) {
-    console.log(err)
+    console.error("Error can't be changed:", err.response?.data?.message || err.message)
+    throw err
   }
 }

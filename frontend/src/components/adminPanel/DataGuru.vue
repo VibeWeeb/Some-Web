@@ -1,17 +1,18 @@
 <script setup>
-import { deleteData, getSingleData, pagecheck, postData, putData, obj } from '@/data/loginCheck'
+import {
+  deleteData,
+  getSingleData,
+  pagecheck,
+  postData,
+  putData,
+  obj,
+  get1,
+} from '@/data/loginCheck'
 import profile from './profile/TeacherProfile.vue'
 import tables from './profile/tableProfile.vue'
 import edit from './profile/EditProfile.vue'
 import { ref } from 'vue'
 
-// const refresh = async () => {
-//   try {
-//     const newData = await getData('guru')
-//   } catch (err) {
-//     console.error(err)
-//   }
-// }
 const isEditMode = ref(false)
 const key = ref(0)
 const initialData = () => ({
@@ -22,6 +23,7 @@ const initialData = () => ({
   address: '',
 })
 const dataGuru = ref(initialData())
+
 const addButton = () => {
   isEditMode.value = false
   dataGuru.value = initialData()
@@ -36,20 +38,20 @@ const editButton = (guruObj, type) => {
 const deleteButton = async (guruObj) => {
   const confirmation = window.confirm(`are you sure to delete ${guruObj.name} no ${guruObj.id} ?`)
   if (confirmation) {
-    await deleteData(obj.value, guruObj.id)
+    await deleteData(get1.value, guruObj.id)
     key.value++
   }
 }
 
 const submitForm = async (value) => {
   if (isEditMode.value) {
-    await putData(obj.value, value.id, value)
+    await putData(get1.value, value.id, value)
     pagecheck.main = ''
   } else {
-    if (await getSingleData(value.nip, value.email, value.phonenumber)) {
+    if (await getSingleData(get1.value, value.id)) {
       alert('data sudah ada')
     } else {
-      await postData('guru', value)
+      await postData(get1.value, value)
       pagecheck.main = ''
       key.value++
     }
