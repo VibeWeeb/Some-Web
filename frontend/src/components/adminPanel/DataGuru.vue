@@ -1,17 +1,11 @@
 <script setup>
-import {
-  deleteData,
-  getSingleData,
-  pagecheck,
-  postData,
-  putData,
-  obj,
-  get1,
-} from '@/data/loginCheck'
+import { deleteData, getSingleData, pagecheck, postData, putData, get1 } from '@/data/loginCheck'
 import profile from './profile/TeacherProfile.vue'
 import tables from './profile/tableProfile.vue'
 import edit from './profile/EditProfile.vue'
 import { ref } from 'vue'
+
+const check = ref(false)
 
 const isEditMode = ref(false)
 const key = ref(0)
@@ -43,18 +37,49 @@ const deleteButton = async (guruObj) => {
   }
 }
 
-const submitForm = async (value) => {
-  if (isEditMode.value) {
-    await putData(get1.value, value.id, value)
-    pagecheck.main = ''
-  } else {
-    if (await getSingleData(get1.value, value.id)) {
-      alert('data sudah ada')
-    } else {
-      await postData(get1.value, value)
-      pagecheck.main = ''
-      key.value++
+const checkAlert = async (value) => {
+  const checkValue = await getSingleData(get1.value, value.nip, value.email, value.phonenumber)
+  let alerts = []
+  if (!isEditMode.value) {
+    if (checkValue.nip) {
+      alerts.push('nip')
     }
+  }
+  if (checkValue.email) {
+    alerts.push('email')
+  }
+  if (checkValue.phonenumber) {
+    alerts.push('phonenumber')
+  }
+  if (alerts.length > 0) {
+    alert(`${alerts.join(', ')} sudah digunakan`)
+    check.value = true
+  }
+}
+
+const submitForm = async (value) => {
+  try {
+    if (isEditMode.value) {
+      checkAlert(value)
+      if (!check.value) {
+        await putData(get1.value, value.id, value)
+        pagecheck.main = ''
+        key.value++
+      } else {
+        return
+      }
+    } else {
+      checkAlert(value)
+      if (!check.value) {
+        await postData(get1.value, value)
+        pagecheck.main = ''
+        key.value++
+      } else {
+        return
+      }
+    }
+  } catch (err) {
+    alert(err.response?.data?.message || 'something went wrong')
   }
 }
 </script>

@@ -164,12 +164,19 @@ onMounted(async () => {
   width: 100%;
 }
 
+.right {
+  margin-top: 10px;
+}
+
 .right a {
   border: 1px solid black;
   border-radius: 30px;
-  margin: 10px;
   padding: 10px 25px;
   font-size: 13px;
+}
+
+.right a:active {
+  border: 1px solid white;
 }
 
 .main-header {

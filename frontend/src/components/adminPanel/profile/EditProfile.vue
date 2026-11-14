@@ -70,6 +70,7 @@ const submitHandler = () => {
 }
 </script>
 <template>
+  {{ dataGuru.value }}
   <div class="profile-base">
     <div class="header">
       <div class="rectangle" />

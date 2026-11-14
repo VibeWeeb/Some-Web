@@ -15,21 +15,26 @@ const db = mysql.createConnection({
 })
 // GET
 // get single guru
-app.get('/api/guru/:id', (req, res) => {
-  const id = parseInt(req.params.id)
+app.get('/api/guru/check', (req, res) => {
+  const { nip, email, phonenumber } = req.query
 
-  if (!id || isNaN(id)) {
-    return res.status(400).json({ message: 'Bad Request : id not valid' })
-  }
+  const querySql = `
+    SELECT nip, email, phonenumber
+    FROM dataguru
+    WHERE nip = ? OR email = ? OR phonenumber = ?
+  `
 
-  const querySql = 'SELECT 1 FROM dataguru WHERE id = ? LIMIT 1'
-  db.query(querySql, [id], (err, result) => {
+  db.query(querySql, [nip || '', email || '', phonenumber || ''], (err, results) => {
     if (err) {
-      console.log(err)
+      console.error(err)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
-    const isExists = result.length > 0
-    res.json({ message: 'data ditemukan ', exists: isExists })
+
+    res.json({
+      nip: results.some((row) => String(row.nip) === String(nip)),
+      email: results.some((row) => String(row.email).toLowerCase() === String(email).toLowerCase()),
+      phonenumber: results.some((row) => String(row.phonenumber) === String(phonenumber)),
+    })
   })
 })
 

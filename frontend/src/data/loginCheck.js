@@ -24,15 +24,21 @@ export const getData = async (table) => {
   }
 }
 
-export const getSingleData = async (table, id) => {
+export const getSingleData = async (table, a, b, c) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/${table}/${id}`)
-    return response.data.exists
+    const response = await axios.get(`http://localhost:3000/api/${table}/check`, {
+      params: {
+        nip: a,
+        email: b,
+        phonenumber: c,
+      },
+    })
+    return response.data
   } catch (err) {
     console.error("Error can't be deleted:", err.response?.data?.message || err.message)
-    throw err
+    return { nip: false, email: false, phonenumber: false }
   } finally {
-    console.log(`Get data completed!`)
+    console.log(`data check completed!`)
   }
 }
 
@@ -77,7 +83,7 @@ export const postData = async (table, data) => {
     const response = await axios.post(`http://localhost:3000/api/${table}`, data)
     console.log(response.data)
   } catch (err) {
-    console.error("Error can't be deleted:", err.response?.data?.message || err.message)
+    console.error('Error cant post data:', err.response?.data?.message || err.message)
     throw err
   } finally {
     console.log(`Post data for ${table} completed!`)
