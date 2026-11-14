@@ -14,14 +14,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
-
---
--- GTID state at the beginning of the backup 
---
-
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'b1c5ef53-d8b8-11f1-8e8b-be03faf91244:1-23';
 
 --
 -- Table structure for table `dataguru`
@@ -33,12 +25,12 @@ DROP TABLE IF EXISTS `dataguru`;
 CREATE TABLE `dataguru` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL COMMENT 'Teacher name',
-  `nip` int NOT NULL COMMENT 'Teacher NIP',
+  `nip` varchar(12) NOT NULL,
   `email` varchar(100) NOT NULL COMMENT 'Teacher Email',
-  `phonenumber` int NOT NULL COMMENT 'Phone number',
+  `phonenumber` varchar(13) NOT NULL,
   `address` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,8 +39,38 @@ CREATE TABLE `dataguru` (
 
 LOCK TABLES `dataguru` WRITE;
 /*!40000 ALTER TABLE `dataguru` DISABLE KEYS */;
-INSERT INTO `dataguru` VALUES (1,'nihan',12345678,'example@example.com',123456789,'jl. KP durian runtuh'),(2,'beca tiguling',1234565,'das@das.das',2341234,'klpnos'),(52,'nihan',12345678,'example@example.com',123456789,'jl. KP durian runtuh'),(53,'asdf',12312312,'asdf@adf.adsf',123123,'adsfadfasdf'),(54,'asdfasdfa',12312321,'asdf@gmail.com',123123123,'asdfasdfasdf'),(55,'adfsafdsadfs',123123123,'jiadsf@adsf.adsf',123123,'adfsasdfsadfdsaf'),(56,'adsfasdfads',123123123,'asdf@gmail.com',123123123,'asdfdsfadf'),(57,'adsfadsf',123123,'asdf@adf.adsf',123,'asdfasdfasdfasddsf'),(58,'123123',12312,'1212@123.123',123,'123');
+INSERT INTO `dataguru` VALUES (63,'Nihan','123456789012','asdf@adf.adsf','0895808850506','adsfadsfadsfadfsdfsadfs'),(64,'adsfcxzv','12334123','zxcv@fe.fsd','08957977212','12edsafadsfasxdasf'),(65,'dgfzsvadsv','1232141234','adsfasf@fdsa.asdf','12132412341','adfasdfadsxc'),(66,'fadsfad','431245342','asaa@dsaf.asdf','12312332411','adsfasdfadsf'),(67,'23dsafdsaadfs','12312321','asdfaf@adf.as','12123123123','aasdfasdfasdfasdf'),(68,'adsfcxzv','123214','asdf@gmail.com','12334512413','asdfasdfadsdsf'),(69,'dasfascvcxv','123123','asdfasdf@gmail.com','12332141234','asdfasdf'),(70,'dafasdfa','123123','qw@daf.adsfd','12312312312','dafadsfasdaf');
 /*!40000 ALTER TABLE `dataguru` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `penilaian`
+--
+
+DROP TABLE IF EXISTS `penilaian`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `penilaian` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_guru` int NOT NULL,
+  `pedagogik` int NOT NULL,
+  `profesional` int NOT NULL,
+  `sosial` int NOT NULL,
+  `kepribadian` int NOT NULL,
+  `total` float NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_guru` (`id_guru`),
+  CONSTRAINT `penilaian_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `dataguru` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `penilaian`
+--
+
+LOCK TABLES `penilaian` WRITE;
+/*!40000 ALTER TABLE `penilaian` DISABLE KEYS */;
+/*!40000 ALTER TABLE `penilaian` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -77,7 +99,6 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES (1,'test','tost','gene','gono');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -88,4 +109,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-10  2:33:10
+-- Dump completed on 2026-11-14 16:30:47
