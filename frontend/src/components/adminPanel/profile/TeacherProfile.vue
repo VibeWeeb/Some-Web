@@ -12,6 +12,7 @@ const props = defineProps({
       email: '',
       phonenumber: '',
       address: '',
+      profile: '',
     }),
   },
 })
@@ -38,7 +39,8 @@ const edit = () => {
     </div>
     <div class="profile-page">
       <div class="profile-image">
-        <img src="@/assets/people.png" alt="" />
+        <img v-if="guru.profile !== ''" :src="`http://localhost:3000/uploads/${guru.profile}`" alt="" />
+        <img src="@/assets/people.png" alt="Empty Foto" v-else />
       </div>
       <div class="profile-list">
         <label>NIP :</label>
@@ -47,6 +49,8 @@ const edit = () => {
         <p>{{ guru.name }}</p>
         <p>EMAIL :</p>
         <p>{{ guru.email }}</p>
+        <p>Mata Pelajaran :</p>
+        <p>{{ guru.pelajaran }}</p>
         <p>NO TELP :</p>
         <p>{{ guru.phonenumber }}</p>
         <p>ALAMAT :</p>
@@ -96,7 +100,13 @@ ul {
 }
 
 .profile-image img {
-  height: 80%;
+  border: 5px solid #0000001a;
+  border-radius: 15px;
+  width: 400px;
+  height: 400px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .profile-list {

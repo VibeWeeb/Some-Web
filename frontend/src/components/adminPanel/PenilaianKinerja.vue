@@ -1,11 +1,26 @@
 <script setup>
-  import kinerja from '@/components/adminPanel/kinerja/tableKinerja.vue'
+import kinerja from '@/components/adminPanel/kinerja/tableKinerja.vue'
+import { pagecheck } from '@/data/loginCheck'
+// import { ref } from 'vue'
+
+// cons isEdit = ref(false)
+// const initialData = ref({
+// nip: '',
+// name: '',
+// pedagogg
+//
+//
+// })
+//
+// const addButton = () =>{
+//   isEdit.value = false
+//
+// }
 </script>
 
 <template>
-  <p> testing some login check</p>
   <div class="data-base">
-    <kinerja />
+    <kinerja v-if="pagecheck.main === ''" />
   </div>
 </template>
 

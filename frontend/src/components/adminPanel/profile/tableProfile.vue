@@ -107,7 +107,7 @@ onMounted(async () => {
               <td class="some-numbering">{{ numbering(index) }}</td>
               <td class="some-nip">{{ item.nip }}</td>
               <td class="some-nameing">{{ item.name }}</td>
-              <td class="some-study">{{ item.email }}</td>
+              <td class="some-study">{{ item.pelajaran }}</td>
               <td class="action">
                 <img @click="deletes(item)" src="@/assets/delete(1).png" />
                 <img @click="edit(item, 'see')" src="@/assets/eye.png" />

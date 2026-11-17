@@ -1,10 +1,30 @@
 import express from 'express'
 import mysql from 'mysql2'
 import cors from 'cors'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
+import { constants } from 'buffer'
 
 const app = express()
 app.use(cors())
 app.use(express.json())
+app.use('/uploads', express.static('uploads'))
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/')
+  },
+  filename: (req, file, cb) => {
+    const suffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+    cb(null, suffix + path.extname(file.originalname))
+  },
+})
+
+const filterUploads = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+})
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -13,6 +33,7 @@ const db = mysql.createConnection({
   database: 'kinerjaguru',
   port: 3307,
 })
+
 // GET
 // get single guru
 app.get('/api/guru/check', (req, res) => {
@@ -175,29 +196,35 @@ app.get('/api/guru', (req, res) => {
 
 // POST (INSERT)
 // insert new data to table
-app.post('/api/guru', (req, res) => {
-  db.query(
-    `INSERT INTO dataguru (name, nip, email, phonenumber,address) VALUES (?,?,?,?,?)`,
-    [req.body.name, req.body.nip, req.body.email, req.body.phonenumber, req.body.address],
-    (err, result) => {
-      if (err) {
-        if (err.code === 'ER_BAD_NULL_ERROR') {
-          return res.status(400).json({ message: 'All data Must be filled' })
-        }
+app.post('/api/guru', filterUploads.single('profile'), (req, res) => {
+  const { name, nip, email, phonenumber, address, pelajaran } = req.body
+  const fotoFile = req.file ? req.file.filename : null
+  const querySql = `INSERT INTO dataguru (name, nip, email, phonenumber,address,pelajaran,profile) VALUES (?,?,?,?,?,?,?)`
+  const queryParams = [name, nip, email, phonenumber, address, pelajaran, fotoFile]
 
-        if (err.code === 'ER_DUP_ENTRY') {
-          return res.status(409).json({ message: 'Input data must be new' })
-        }
-
-        console.log(err)
-        return res.status(500).json({ message: 'Internal Server Error' })
+  db.query(querySql, queryParams, (err, result) => {
+    if (err) {
+      if (req.file) {
+        fs.unlink(req.file.path, (unlinkErr) => {
+          if (unlinkErr) console.error('cannot remove file', unlinkErr)
+        })
       }
-      res.status(201).json({
-        message: 'Data saved successfully',
-        id: result.insertId,
-      })
-    },
-  )
+      if (err.code === 'ER_BAD_NULL_ERROR') {
+        return res.status(400).json({ message: 'All data Must be filled' })
+      }
+
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(409).json({ message: 'Input data must be new' })
+      }
+
+      console.log(err)
+      return res.status(500).json({ message: 'Internal Server Error' })
+    }
+    res.status(201).json({
+      message: 'Data saved successfully',
+      id: result.insertId,
+    })
+  })
 })
 
 // DELETE
@@ -209,52 +236,100 @@ app.delete('/api/guru/:id', (req, res) => {
     return res.status(400).json({ message: 'Bad Request : id not valid' })
   }
 
-  const querySql = 'DELETE FROM dataguru WHERE id = ?'
-  db.query(querySql, [id], (err, result) => {
+  db.query('SELECT profile from dataguru WHERE id = ?', [id], (err, row) => {
     if (err) {
       console.error(err)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Not Found' })
+
+    if (row.length === 0) {
+      return res.status(404).json({ message: 'File not Found' })
     }
-    res.json({ message: `Data Deleted`, id: id })
+
+    const fotoFile = row.profile
+
+    const querySql = 'DELETE FROM dataguru WHERE id = ?'
+    db.query(querySql, [id], (err, result) => {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ message: 'Internal Server Error' })
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Not Found' })
+      }
+      if (fotoFile) {
+        const filePath = path.join(__dirname, 'uploads', fotoFile)
+        fs.unlink(filePath, (unlinkErr) => {
+          if (unlinkErr) console.error('cannot delete file', unlinkErr)
+        })
+      }
+      res.json({ message: `Data Deleted`, id: id })
+    })
   })
 })
 
 // PUT (UPDATE)
 // PUT guru
-app.put('/api/guru/:id', (req, res) => {
+app.put('/api/guru/:id', filterUploads.single('profile'), (req, res) => {
   const id = parseInt(req.params.id)
-  const { nip, name, email, phonenumber, address } = req.body
+  const { nip, name, email, phonenumber, address, pelajaran } = req.body
+  const fotoFile = req.file ? req.file.filename : null
+  const querySet =
+    'nip = ?, name = ?, email = ?, phonenumber = ?, address = ?, pelajaran = ?, profile=?'
+  const querySql = `UPDATE dataguru SET ${querySet} WHERE id = ?`
 
   if (!id || isNaN(id)) {
     return res.status(400).json({ message: 'Bad Request : id not valid' })
   }
 
-  const set = 'nip = ?, name = ?, email = ?, phonenumber = ?, address =?  '
-  const value = [nip, name, email, phonenumber, address, id]
-  const querySql = `UPDATE dataguru SET ${set} WHERE id = ?`
-
-  db.query(querySql, value, (err, result) => {
+  db.query('SELECT profile FROM dataguru WHERE id = ?', [id], (err, row) => {
     if (err) {
-      if (err.code === 'ER_BAD_NULL_ERROR') {
-        return res.status(400).json({ message: 'All data Must be filled' })
+      if (req.file) fs.unlink(req.file.path, () => { })
+      console.error(err)
+    }
+
+    if (row.length === 0) {
+      if (req.file) fs.unlink(req.file.path, () => { })
+      return res.status(404).json({ message: 'Not Found!' })
+    }
+
+    const old = row.profile
+    const final = fotoFile ? fotoFile : old
+    const queryParams = [nip, name, email, phonenumber, address, pelajaran, final, id]
+
+    db.query(querySql, queryParams, (err, result) => {
+      if (err) {
+        if (req.file) {
+          fs.unlink(req.file.path, (unlinkErr) => {
+            if (unlinkErr) console.error('cannot remove file', unlinkErr)
+          })
+        }
+
+        if (err.code === 'ER_BAD_NULL_ERROR') {
+          return res.status(400).json({ message: 'All data Must be filled' })
+        }
+
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(409).json({ message: 'Input data must be new' })
+        }
+        console.log(err)
+        return res.status(500).json({ message: 'Internal Server Error' })
+      }
+      if (old && fotoFile) {
+        const oldPath = path.join(__dirname, 'uploads', old)
+        fs.unlink(oldPath, (unlinkErr) => {
+          if (unlinkErr) console.error('cannot delete Old Photo')
+        })
       }
 
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(409).json({ message: 'Input data must be new' })
+      if (result.affectedRows === 0) {
+        return res.status(400).json({ message: 'Bad Request : data doesnt changed' })
       }
-      console.log(err)
-      return res.status(500).json({ message: 'Internal Server Error' })
-    }
-    if (result.affectedRows === 0) {
-      return res.status(400).json({ message: 'Bad Request : data doesnt changed' })
-    }
-    if (result.changedRows === 0) {
-      return res.json({ message: 'Tidak ada perubahan data', id: id })
-    }
-    res.status(201).json({ message: `Data Updated`, id: id })
+      if (result.changedRows === 0) {
+        return res.json({ message: 'Tidak ada perubahan data', id: id })
+      }
+      res.status(201).json({ message: `Data Updated`, id: id })
+    })
   })
 })
 
