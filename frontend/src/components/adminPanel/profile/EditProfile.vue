@@ -191,73 +191,76 @@ const submitHandler = () => {
 </template>
 
 <style scoped>
+/* Layout */
 .profile-base {
   display: flex;
-  width: 100%;
-  align-items: start;
   flex-direction: column;
+  align-items: start;
+  width: 100%;
   margin-top: 30px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  margin: 40px 40px 80px;
+}
+
+.rectangle {
+  width: 25px;
+  height: 10px;
+  margin: 8px 10px 0 20px;
+  background-color: var(--color-primary);
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 40px;
+  height: 100%;
+  margin-left: 0;
 }
 
 ul {
   list-style-image: url('../../../assets/stripped.png');
 }
 
-.header {
-  display: flex;
-  flex-direction: row;
-  margin: 40px;
-  margin-bottom: 80px;
-}
-
-.rectangle {
-  width: 25px;
-  height: 10px;
-  margin: 8px 10px 0px 20px;
-  background-color: wheat;
-}
-
-.profile-page {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  gap: 40px;
-  height: 100%;
-  margin-left: 0px;
-}
-
+/* Photo + upload */
 .profile-image {
   display: flex;
   flex-direction: column;
 }
 
 .profile-image img {
-  border: 5px solid #0000001a;
-  border-radius: 15px;
+  display: block;
   width: 400px;
   height: 400px;
+  border: 5px solid var(--color-primary-light);
+  border-radius: var(--radius-md);
   object-fit: cover;
   object-position: center;
-  display: block;
 }
 
 .profile-image label {
+  align-self: center;
+  width: 50%;
   margin: 10px 5px;
   padding: 6px 12px;
-  border: 3px outset #949494;
+  border: 3px outset var(--color-primary);
+  color: var(--color-primary);
   cursor: pointer;
-  width: 50%;
-  align-self: center;
 }
 
 .profile-image label:active {
-  border: 3px inset #949494;
+  border: 3px inset var(--color-primary);
 }
 
 .profile-image input[type='file'] {
   display: none;
 }
 
+/* Form */
 .profile-list {
   display: flex;
   flex-direction: row;
@@ -267,8 +270,8 @@ ul {
 
 .profile-list label {
   width: 20%;
-  vertical-align: middle;
   margin-top: 10px;
+  vertical-align: middle;
 }
 
 .nip,
@@ -276,34 +279,20 @@ ul {
 .email,
 .pelajaran,
 .telp,
-.address,
-.submit-button {
-  width: 50%;
+.address {
   display: flex;
-}
-
-.submit-button {
-  align-items: center;
-  justify-content: end;
-  width: 100%;
+  width: 50%;
 }
 
 .profile-list input {
-  border-color: #00000066;
-  background-color: transparent;
-  outline: none;
-  border-radius: 15px;
-  padding-left: 10px;
-  padding-right: 10px;
-
-  font-size: 18px;
-
   width: 70%;
   height: 40%;
-}
-
-.profile-list input:focus {
-  border-color: #00000066;
+  padding: 0 10px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  background-color: transparent;
+  font-size: var(--font-size-form);
 }
 
 .nip input {
@@ -311,21 +300,8 @@ ul {
 }
 
 .nip input:disabled {
-  background: #0000001a;
-  color: #ffffff1a;
-}
-
-.address textarea {
-  background-color: transparent;
-  outline: none;
-  border-color: #00000066;
-  border-radius: 15px;
-  box-sizing: border-box;
-  resize: none;
-  font-size: 18px;
-  padding: 0px 10px;
-  width: 70%;
-  height: 100%;
+  background: var(--color-primary-light);
+  color: var(--color-text-muted);
 }
 
 .pelajaran label {
@@ -333,39 +309,64 @@ ul {
 }
 
 .pelajaran select {
-  border-color: #00000066;
-  text-align: center;
-  background: transparent;
-  border-radius: 15px;
   width: 50%;
   height: 40%;
-  font-size: 18px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 0 10px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-size: var(--font-size-form);
+  text-align: center;
+}
+
+.address textarea {
+  box-sizing: border-box;
+  width: 70%;
+  height: 100%;
+  padding: 0 10px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  background-color: transparent;
+  font-size: var(--font-size-form);
+  resize: none;
+}
+
+/* Submit button */
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  width: 100%;
 }
 
 .submit-button button {
   display: flex;
-  border-color: #00000066;
-  border-radius: 5px;
-  margin-top: 15px;
-  margin-right: 5%;
   width: 10%;
   height: 25%;
+  margin-top: 15px;
+  margin-right: 5%;
+  border-color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
   font-size: 15px;
-  background-color: transparent;
   cursor: pointer;
+}
+
+.submit-button button:hover {
+  border-color: var(--color-primary-dark);
+  background-color: var(--color-primary-dark);
 }
 
 .submit-button img {
   width: 20%;
   height: 20px;
   margin: 6px 5px;
-  filter: brightness(0);
 }
 
 .submit-button p {
   width: 50%;
   margin-top: 7px;
+  color: var(--color-text-inverse);
 }
 </style>

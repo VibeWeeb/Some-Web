@@ -39,7 +39,10 @@ const edit = () => {
     </div>
     <div class="profile-page">
       <div class="profile-image">
-        <img v-if="guru.profile !== ''" :src="`http://localhost:3000/uploads/${guru.profile}`" alt="" />
+        <!-- <video controls autoplay loop playsinline width="640" crossorigin="anonymous"> -->
+        <!--   <source :src="`http://localhost:3000/uploads/video.mp4`" type="video/mp4" /> -->
+        <!-- </video> -->
+        <img v-if="guru.profile" :src="`http://localhost:3000/uploads/${guru.profile}`" alt="" />
         <img src="@/assets/people.png" alt="Empty Foto" v-else />
       </div>
       <div class="profile-list">
@@ -65,50 +68,52 @@ const edit = () => {
 </template>
 
 <style scoped>
+/* Layout */
 .profile-base {
   display: flex;
-  width: 100%;
-  align-items: start;
   flex-direction: column;
+  align-items: start;
+  width: 100%;
   margin-top: 30px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  margin: 40px 40px 80px;
+}
+
+.rectangle {
+  width: 25px;
+  height: 10px;
+  margin: 8px 10px 0 20px;
+  background-color: var(--color-primary);
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 40px;
+  margin-left: 0;
 }
 
 ul {
   list-style-image: url('../../../assets/stripped.png');
 }
 
-.header {
-  display: flex;
-  flex-direction: row;
-  margin: 40px;
-  margin-bottom: 80px;
-}
-
-.rectangle {
-  width: 25px;
-  height: 10px;
-  margin: 8px 10px 0px 20px;
-  background-color: wheat;
-}
-
-.profile-page {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  gap: 40px;
-  margin-left: 0px;
-}
-
+/* Photo */
 .profile-image img {
-  border: 5px solid #0000001a;
-  border-radius: 15px;
+  display: block;
   width: 400px;
   height: 400px;
+  border: 5px solid var(--color-primary-light);
+  border-radius: var(--radius-md);
   object-fit: cover;
   object-position: center;
-  display: block;
 }
 
+/* Details */
 .profile-list {
   display: flex;
   flex-direction: column;
@@ -122,10 +127,23 @@ ul {
 
 .profile-list a {
   display: flex;
-  border: 1px solid white;
   width: 190px;
   height: 40px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
   font-size: 15px;
+  cursor: pointer;
+}
+
+.profile-list a:hover {
+  border-color: var(--color-primary-dark);
+  background-color: var(--color-primary-dark);
+}
+
+.profile-list a p {
+  margin-top: 6px;
+  color: var(--color-text-inverse);
 }
 
 .profile-list img {
@@ -133,26 +151,22 @@ ul {
   margin: 6px;
 }
 
-.profile-list a p {
-  margin-top: 6px;
-}
-
 .profile-list form {
   display: flex;
-  justify-content: space-between;
   flex-direction: column;
+  justify-content: space-between;
   gap: 10px;
-  margin-left: 0px;
+  margin-left: 0;
 }
 
 .profile-list input {
-  background-color: transparent;
-  outline: none;
-  border: 1px solid black;
-  border-radius: 15px;
-  padding: 10px 0px 10px 5px;
-  font-size: 18px;
   width: 250px;
+  padding: 10px 0 10px 5px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  background-color: transparent;
+  font-size: var(--font-size-form);
 }
 
 .profile-list input[type='number'] {

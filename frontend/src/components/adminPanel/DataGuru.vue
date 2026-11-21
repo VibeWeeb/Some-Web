@@ -1,5 +1,5 @@
 <script setup>
-import { deleteData, getSingleData, pagecheck, postData, putData, get1 } from '@/data/loginCheck'
+import { deleteData, getSingleData, pagecheck, postData, putData, get1 } from '@/data/brain'
 import profile from './profile/TeacherProfile.vue'
 import tables from './profile/tableProfile.vue'
 import edit from './profile/EditProfile.vue'
@@ -90,8 +90,8 @@ const submitForm = async (value) => {
 
 <style scoped>
 .data-base {
-  justify-content: center;
   display: flex;
+  justify-content: center;
   width: 100%;
   min-height: 71vh;
 }

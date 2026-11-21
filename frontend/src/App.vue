@@ -1,23 +1,24 @@
 <script setup>
 import loginPages from './components/loginPages/loginPages.vue'
 import dashboard from './components/adminPanel/sidepanelItem.vue'
-import { loginCheck } from '@/data/loginCheck'
+import { brain } from '@/data/brain'
 </script>
 
 <template>
-  <loginPages v-if="loginCheck == 'sign out'" />
-  <dashboard v-if="loginCheck == 'sign in'" />
+  <loginPages v-if="brain == 'sign out'" />
+  <dashboard v-if="brain == 'sign in'" />
 </template>
 
 <style>
+/* Global reset */
 * {
   box-sizing: border-box;
-  color: wheat;
   margin: 0;
   padding: 0;
+  color: var(--color-text);
 }
 
 body {
-  background-color: #808080;
+  background-color: var(--color-bg);
 }
 </style>

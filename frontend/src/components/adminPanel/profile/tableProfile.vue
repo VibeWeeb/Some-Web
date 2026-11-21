@@ -1,11 +1,14 @@
 <script setup>
-import { get1, getLimit, serchData } from '@/data/loginCheck'
+import { get1, getLimit, serchData } from '@/data/brain'
 import { ref, onMounted, watch } from 'vue'
+import sortButton from '@/components/sortButton.vue'
 const val = ref([])
 const page = ref(1)
 const max = ref(7)
 const sh = ref('')
 const totalPages = ref(1)
+const sort = ref('')
+const order = ref('')
 
 const emit = defineEmits(['addButton', 'editButton', 'deleteButton'])
 const add = () => {
@@ -21,7 +24,7 @@ const deletes = (guruObj) => {
 
 const data = async () => {
   try {
-    const data = await getLimit(get1.value, page.value, max.value)
+    const data = await getLimit(get1.value, page.value, max.value, sort.value, order.value)
     val.value = data.result
     totalPages.value = data.totalPages
   } catch (error) {
@@ -35,11 +38,33 @@ const search = async () => {
     return data()
   }
   try {
-    const data = await serchData(get1.value, sh.value, page.value, max.value)
+    const data = await serchData(
+      get1.value,
+      sh.value,
+      page.value,
+      max.value,
+      sort.value,
+      order.value,
+    )
     val.value = data.result
     totalPages.value = data.totalPages
   } catch (err) {
     console.error(err)
+  }
+}
+
+const sortBy = (field, direction) => {
+  if (sort.value === field && order.value === direction) {
+    sort.value = ''
+    order.value = ''
+  } else {
+    sort.value = field
+    order.value = direction
+  }
+  if (page.value !== 1) {
+    page.value = 1 // watch(page) yang memuat ulang
+  } else {
+    search()
   }
 }
 
@@ -93,10 +118,26 @@ onMounted(async () => {
       <table>
         <thead>
           <tr>
-            <th class="some-numbering">NO</th>
-            <th class="some-nip">NIP</th>
-            <th class="some-nameing">NAMA</th>
-            <th class="some-study">MATA PELAJARAN</th>
+            <th class="some-numbering">
+              NO
+              <sortButton field="id" :sort="sort" :order="order" @sort="sortBy" />
+            </th>
+            <th class="some-nip">
+              NIP
+
+              <sortButton field="nip" :sort="sort" :order="order" @sort="sortBy" />
+            </th>
+
+            <th class="some-nameing">
+              NAMA
+              <sortButton field="name" :sort="sort" :order="order" @sort="sortBy" />
+            </th>
+
+            <th class="some-study">
+              MATA PELAJARAN
+              <sortButton field="pelajaran" :sort="sort" :order="order" @sort="sortBy" />
+            </th>
+
             <th class="some-action">ACTION</th>
           </tr>
         </thead>
@@ -128,17 +169,31 @@ onMounted(async () => {
   </div>
 </template>
 <style scoped>
+/* ==========================================================================
+   Table wrapper
+   ========================================================================== */
 .table-base {
-  visibility: visible;
-  border: 1px solid white;
-  border-radius: 20px;
+  flex-grow: 1;
   margin: 50px 100px;
   padding: 10px;
-  flex-grow: 1;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  visibility: visible;
 }
 
 .table-base.hide {
   visibility: hidden;
+}
+
+/* ==========================================================================
+   Header (search + "NEW" button)
+   ========================================================================== */
+.main-header {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  gap: 20px;
 }
 
 .left {
@@ -148,20 +203,21 @@ onMounted(async () => {
 .left img {
   width: 20px;
   height: 20px;
-  border: 1px solid white;
-  border-radius: 50%;
   margin: 10px;
   padding: 1px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
 }
 
 .left input {
-  background-color: transparent;
-  padding: 10px;
-  font-size: 1.05rem;
   flex-grow: 1;
-  outline: none;
-  border: none;
   width: 100%;
+  padding: 10px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: var(--font-size-search);
 }
 
 .right {
@@ -169,53 +225,62 @@ onMounted(async () => {
 }
 
 .right a {
-  border: 1px solid black;
-  border-radius: 30px;
   padding: 10px 25px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
   font-size: 13px;
+  cursor: pointer;
+}
+
+.right a:hover {
+  border-color: var(--color-primary-dark);
+  background-color: var(--color-primary-dark);
 }
 
 .right a:active {
-  border: 1px solid white;
+  background-color: var(--color-primary-dark);
 }
 
-.main-header {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  flex-grow: 1;
-}
-
+/* ==========================================================================
+   Table
+   ========================================================================== */
 .table-component {
   display: flex;
   flex-grow: 1;
-  margin: 40px 10px 0px 10px;
-  border: 1px solid gainsboro;
-  border-radius: 15px;
-  padding: 5px;
   height: 80%;
+  margin: 40px 10px 0;
+  padding: 5px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .table-component table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 20px;
   table-layout: fixed;
+  font-size: var(--font-size-lg);
 }
 
 .table-component thead {
-  border-bottom: 1px solid #00000066;
   max-height: 10%;
-}
-
-.table-component td {
-  overflow-wrap: break-word;
-  text-align: left;
-  max-height: 10%;
+  border-bottom: 1px solid var(--color-primary);
 }
 
 .table-component th {
+  color: var(--color-primary-dark);
   text-align: left;
+}
+
+.table-component td {
+  max-height: 10%;
+  overflow-wrap: break-word;
+  text-align: left;
+}
+
+.table-component tr:hover {
+  background-color: var(--color-primary-light);
 }
 
 .table-component .empty td {
@@ -223,10 +288,7 @@ onMounted(async () => {
   text-align: center;
 }
 
-.table-component tr:hover {
-  background-color: #0000001a;
-}
-
+/* Column widths */
 .some-numbering {
   width: 10%;
 }
@@ -243,33 +305,38 @@ onMounted(async () => {
   width: 30%;
 }
 
+/* Action icons */
 .action {
-  gap: 0px;
+  right: 50px;
   width: 15%;
   margin: 10px 10px 10px 80px;
-  right: 50px;
+  gap: 0;
 }
 
 .action a {
-  height: 20px;
   width: 20px;
-}
-
-.action img:active {
-  border: 1px solid black;
-  border-radius: 30px;
-  filter: brightness(0);
+  height: 20px;
 }
 
 .action img {
   width: 30%;
-  border: 1px solid white;
-  border-radius: 30px;
-  margin-right: 10px;
   margin-top: 10px;
+  margin-right: 10px;
   padding: 5px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-primary);
+  cursor: pointer;
 }
 
+.action img:active {
+  border-color: var(--color-primary-dark);
+  background-color: var(--color-primary-dark);
+}
+
+/* ==========================================================================
+   Footer (pagination)
+   ========================================================================== */
 .footer {
   display: flex;
   justify-content: flex-start;
@@ -277,8 +344,8 @@ onMounted(async () => {
 }
 
 .footer p {
-  margin-top: 10px;
   width: 100%;
+  margin-top: 10px;
 }
 
 .footer img {

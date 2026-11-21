@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue'
 import axios from 'axios'
 
-export const loginCheck = ref('sign out')
+export const brain = ref('sign out')
 export const pagecheck = reactive({
   sidepanel: 'dashboard',
   main: '',
@@ -9,8 +9,27 @@ export const pagecheck = reactive({
 
 export const obj = ref('guru')
 export const get1 = ref('guru')
+export const get2 = ref('nilai')
 
 export const ids = ref(0)
+export const currentUser = ref(null)
+
+export const nilaiOptions = [
+  { value: 4, text: 'SANGAT BAIK' },
+  { value: 3, text: 'BAIK' },
+  { value: 2, text: 'CUKUP BAIK' },
+  { value: 1, text: 'KURANG BAIK' },
+]
+
+export const loginUser = async (username, password) => {
+  try {
+    const response = await axios.post('http://localhost:3000/api/login', { username, password })
+    return response.data.user
+  } catch (err) {
+    console.error("Error can't login:", err.response?.data?.message || err.message)
+    throw err
+  }
+}
 
 export const getData = async (table) => {
   try {
@@ -42,12 +61,14 @@ export const getSingleData = async (table, a, b, c) => {
   }
 }
 
-export const getLimit = async (table, page, max) => {
+export const getLimit = async (table, page, max, sort, order) => {
   try {
     const response = await axios.get(`http://localhost:3000/api/${table}`, {
       params: {
         page: page,
         limit: max,
+        sort: sort || undefined,
+        order: order || undefined,
       },
     })
     return response.data
@@ -59,13 +80,15 @@ export const getLimit = async (table, page, max) => {
   }
 }
 
-export const serchData = async (table, searchObj, page, max) => {
+export const serchData = async (table, searchObj, page, max, sort, order) => {
   try {
     const response = await axios.get(`http://localhost:3000/api/${table}`, {
       params: {
         search: searchObj,
         page: page,
         limit: max,
+        sort: sort || undefined,
+        order: order || undefined,
       },
     })
 

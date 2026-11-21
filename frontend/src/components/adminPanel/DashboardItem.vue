@@ -1,12 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { get1, getData } from '@/data/loginCheck'
+import { currentUser, get1, get2, getData } from '@/data/brain'
 const value = ref([])
+const nilai = ref([])
 
 onMounted(async () => {
   try {
     const data = await getData(get1.value)
+    const pen = await getData(get2.value)
+    nilai.value = pen
     value.value = data
+    console.log(nilai.value.length)
   } catch (error) {
     console.error("error Doesn't read table : ", error)
   }
@@ -14,7 +18,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h1 v-if="value.length > 0">Hello {{ value[0].name }}</h1>
+  <h1>Hello {{ currentUser.name }}</h1>
   <div class="main-container">
     <div class="total-guru">
       <div class="header">guru</div>
@@ -22,13 +26,13 @@ onMounted(async () => {
     </div>
 
     <div class="total-perhitungan">
-      <div class="header">guru</div>
-      <div class="body">VALUES</div>
+      <div class="header">Kinerja</div>
+      <div class="body">{{ nilai.length }}</div>
     </div>
 
     <div class="rata-rata">
-      <div class="header">guru</div>
-      <div class="body">VALUES</div>
+      <div class="header">Kinerja Terbaik</div>
+      <div class="body">{{ nilai[0]?.name }}</div>
     </div>
   </div>
 </template>
@@ -36,58 +40,52 @@ onMounted(async () => {
 <style scoped>
 .main-container {
   display: flex;
-  gap: 20px;
   flex-direction: row;
   justify-content: center;
+  gap: 20px;
+}
+
+/* Summary cards */
+.total-guru,
+.total-perhitungan,
+.rata-rata {
+  width: 150px;
+  height: 130px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .header {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-primary-dark);
 }
 
 .body {
   margin-top: 30px;
 }
 
-.total-guru,
-.total-perhitungan,
-.rata-rata {
-  border: 1px solid black;
-  width: 150px;
-  height: 130px;
-  border-radius: 20px;
-}
-
+/* Mobile */
 @media (max-width: 360px) {
   h1 {
-    font-size: 30px;
     padding-bottom: 40px;
+    font-size: 30px;
   }
 
   .main-container {
-    display: flex;
-    gap: 10px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     align-content: center;
-  }
-
-  .header {
-    border-bottom: 1px solid black;
-  }
-
-  .body {
-    margin-top: 30px;
+    gap: 10px;
   }
 
   .total-guru,
   .total-perhitungan,
   .rata-rata {
-    border: 1px solid black;
     width: 130px;
     height: 100px;
-    border-radius: 20px;
     margin-left: 55px;
   }
 }
