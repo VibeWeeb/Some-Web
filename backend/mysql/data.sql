@@ -63,7 +63,7 @@ CREATE TABLE `penilaian` (
   PRIMARY KEY (`id`),
   KEY `id_guru` (`id_guru`),
   CONSTRAINT `penilaian_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `dataguru` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,6 +72,7 @@ CREATE TABLE `penilaian` (
 
 LOCK TABLES `penilaian` WRITE;
 /*!40000 ALTER TABLE `penilaian` DISABLE KEYS */;
+INSERT INTO `penilaian` VALUES (8,64,4,4,4,4,4),(9,66,3,4,3,4,3.4),(10,67,4,3,2,4,3.3),(11,82,1,3,2,4,2.1),(12,81,3,2,4,4,3),(13,69,3,3,2,4,2.9),(15,72,4,1,1,1,2.2),(16,79,4,3,2,4,3.3),(17,80,4,3,4,4,3.7),(18,83,1,1,1,1,1),(19,68,4,4,4,4,4),(23,63,4,4,4,4,4),(24,65,3,1,3,3,2.6);
 /*!40000 ALTER TABLE `penilaian` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +90,7 @@ CREATE TABLE `user` (
   `position` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +99,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'test','tost','gene','gono');
+INSERT INTO `user` VALUES (1,'test','tost','gene','gono'),(52,'Kepala Sekolah','$2b$10$/ev2QAvsDICiRvsNTclQS.qm/BIER3cow07ZW/uF2G/aU98c2x4Wi','Kepala Sekolah','admin');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -111,4 +112,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-21  6:06:16
+-- Dump completed on 2026-11-22  1:12:10
